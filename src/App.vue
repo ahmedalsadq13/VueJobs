@@ -1,12 +1,10 @@
 <script setup>
 import Navbar from "./components/Navbar.vue";
-import Hero from "./components/Hero.vue";
-import HomeCards from "./components/HomeCards.vue";
-import JobListing from "./components/JobListing.vue";
+import { RouterView } from "vue-router";
 </script>
 <template>
-  <Navbar />
-  <Hero />
-  <HomeCards />
-  <JobListing />
+  <main class="flex flex-col justify-stretch">
+    <Navbar />
+    <RouterView />
+  </main>
 </template>

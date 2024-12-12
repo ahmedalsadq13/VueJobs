@@ -17,7 +17,7 @@ defineProps({
 
 <template>
         <!-- Hero -->
-        <section class="bg-green-700 py-20 mb-4">
+        <section class="bg-green-700 py-20 mb-4 rounded-md">
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center"
       >
