@@ -1,63 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="icon" type="image/png" href="/favicon.ico" />
-    <title>Vue Jobs | Become a Vue Developer</title>
-  </head>
-  <body>
-    <nav class="bg-green-700 border-b border-green-500">
-      <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        <div class="flex h-20 items-center justify-between">
-          <div
-            class="flex flex-1 items-center justify-center md:items-stretch md:justify-start"
-          >
-            <!-- Logo -->
-            <a class="flex flex-shrink-0 items-center mr-4" href="index.html">
-              <img class="h-10 w-auto" src="images/logo.png" alt="Vue Jobs" />
-              <span class="hidden md:block text-white text-2xl font-bold ml-2"
-                >Vue Jobs</span
-              >
-            </a>
-            <div class="md:ml-auto">
-              <div class="flex space-x-2">
-                <a
-                  href="index.html"
-                  class="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
-                  >Home</a
-                >
-                <a
-                  href="jobs.html"
-                  class="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
-                  >Jobs</a
-                >
-                <a
-                  href="add-job.html"
-                  class="text-white bg-green-900 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
-                  >Add Job</a
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
+<script setup>
+import router from '@/router';
+import { reactive } from 'vue'
+import axios from 'axios';
+import {useToast} from 'vue-toastification';
 
-    <section class="bg-green-50">
-      <div class="container m-auto max-w-2xl py-24">
+
+
+const form = reactive({
+    type:'Full-Time',
+    title: '',
+    description: '',
+    salary: '',
+    location: '',
+    company:{
+        name: '',
+        description: '',
+        contactEmail: '',
+        contactPhone: ''
+    }
+});
+const toast = useToast();
+
+const handleSubmit = async() => {
+    const newJob = {
+        title: form.title,
+        description: form.description,
+        type: form.type,
+        salary: form.salary,
+        location: form.location,
+        company: {
+            name: form.company.name,
+            description: form.company.description,
+            contactEmail: form.company.contactEmail,
+            contactPhone: form.company.contactPhone
+        }
+    }
+
+
+    try {
+        const response = await axios.post('/api/jobs/', newJob);
+        toast.success('Job Added successfully')
+        router.push(`/jobs/${response.data.id}`)        
+        clearForm()
+    }
+    catch (error) {
+        console.error('error fetching job', error)
+        toast.error('Job was not added')
+    } 
+    console.log(newJob)
+}
+
+const clearForm = () =>{
+    form.title = ''
+    form.description = ''
+    form.salary = ''
+    form.location = ''
+
+}
+
+
+</script>
+
+<template>
+     <section class="bg-green-50">
+      <div class="container m-auto lg:w-6/12 py-12">
         <div
-          class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0"
+          class="bg-white px-6 py-8 mb-4 rounded-md border m-4 md:m-0"
         >
-          <form>
+          <form @submit.prevent="handleSubmit">
             <h2 class="text-3xl text-center font-semibold mb-6">Add Job</h2>
 
             <div class="mb-4">
@@ -69,6 +79,7 @@
                 name="type"
                 class="border rounded w-full py-2 px-3"
                 required
+                v-model="form.type"
               >
                 <option value="Full-Time">Full-Time</option>
                 <option value="Part-Time">Part-Time</option>
@@ -88,6 +99,7 @@
                 class="border rounded w-full py-2 px-3 mb-2"
                 placeholder="eg. Beautiful Apartment In Miami"
                 required
+                v-model="form.title"
               />
             </div>
             <div class="mb-4">
@@ -102,6 +114,7 @@
                 class="border rounded w-full py-2 px-3"
                 rows="4"
                 placeholder="Add any job duties, expectations, requirements, etc"
+                v-model="form.description"
               ></textarea>
             </div>
 
@@ -114,6 +127,7 @@
                 name="salary"
                 class="border rounded w-full py-2 px-3"
                 required
+                v-model="form.salary"
               >
                 <option value="Under $50K">under $50K</option>
                 <option value="$50K - $60K">$50 - $60K</option>
@@ -140,6 +154,7 @@
                 class="border rounded w-full py-2 px-3 mb-2"
                 placeholder="Company Location"
                 required
+                v-model="form.location"
               />
             </div>
 
@@ -155,6 +170,7 @@
                 name="company"
                 class="border rounded w-full py-2 px-3"
                 placeholder="Company Name"
+                v-model="form.company.name"
               />
             </div>
 
@@ -170,6 +186,7 @@
                 class="border rounded w-full py-2 px-3"
                 rows="4"
                 placeholder="What does your company do?"
+                v-model="form.company.description"
               ></textarea>
             </div>
 
@@ -186,6 +203,7 @@
                 class="border rounded w-full py-2 px-3"
                 placeholder="Email address for applicants"
                 required
+                v-model="form.company.contactEmail"
               />
             </div>
             <div class="mb-4">
@@ -200,6 +218,7 @@
                 name="contact_phone"
                 class="border rounded w-full py-2 px-3"
                 placeholder="Optional phone for applicants"
+                v-model="form.company.contactPhone"
               />
             </div>
 
@@ -215,7 +234,9 @@
         </div>
       </div>
     </section>
+</template>
 
-    <script src="js/main.js"></script>
-  </body>
-</html>
+
+<style scoped>
+
+</style>
